@@ -1,42 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Addusers from "../components/Addusers";
+import AddUsers from "../components/AddUsers";
+import DisplayUsers from "../components/DisplayUsers";
 import NavbarComponent from "../components/NavbarComponent";
-import Displayusers from "../components/Displayusers";
-import AddRelationship from "../components/AddRelationship";
+import FindRelationship from "../components/FindRelationship"
+import RelationShipDropdown from "../components/RelationShipDropdown";
 
 
-const Mainpage = () => {
+const MainPage = () => {
 
-    const [users,setUsers]=useState([])
+  const [users, setUsers] = useState([
+    "Sammer",
+    "Bhaskar",
+    "Aayushi"
+  ])
+  const [relationships, setRelationships] = useState({
+    "Sammer": ["Aayushi"],
+    "Bhaskar": ["Aayushi"],
+  })
+
+
+  const handleAddRelationShip = (formState) => {
+    const copyRelationships = { ...relationships };
+    if (copyRelationships.hasOwnProperty(formState.person1)) {
+      if (!copyRelationships[formState.person1].includes(formState.person2)) {
+        copyRelationships[formState.person1] = [...copyRelationships[formState.person1], formState.person2]
+      }
+    } else {
+      copyRelationships[formState.person1] = [formState.person2];
+    }
+    setRelationships(copyRelationships)
+  }
+
+  console.log("Relationships =>", relationships)
 
   return (
-    <>
-      <div>
-        <NavbarComponent />
-      </div>
-
+    <Fragment>
+      <NavbarComponent />
       <Row>
-
-        <Col xs={4}>
-          <Addusers users={users} setUsers={setUsers}/>
-
-          <div>
-            <Row>
-              <Displayusers users={users}/>
-            </Row>
-          </div>
-        </Col>
-
-        <Col xs={4}>
-          <AddRelationship users={users} />
-        </Col>
-
-        <Col xs={4}></Col>
-
+        <AddUsers users={users} setUsers={setUsers} />
       </Row>
-    </>
+      <Row>
+        <DisplayUsers users={users} />
+      </Row>
+      <Row>
+        <h1>Add Relationship</h1>
+        <RelationShipDropdown users={users} handleOnClick={handleAddRelationShip} buttonName={"Save"} />
+      </Row>
+      <Row>
+        <FindRelationship users={users} relationships={relationships} />
+      </Row>
+    </Fragment>
   );
 };
-export default Mainpage;
+export default MainPage;
